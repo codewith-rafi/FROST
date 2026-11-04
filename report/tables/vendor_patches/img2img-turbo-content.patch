@@ -1,0 +1,395 @@
+diff --git a/src/my_utils/training_utils.py b/src/my_utils/training_utils.py
+index f0819b7..6a438ac 100644
+--- a/src/my_utils/training_utils.py
++++ b/src/my_utils/training_utils.py
+@@ -2,6 +2,7 @@ import os
+ import random
+ import argparse
+ import json
++import numpy as np
+ import torch
+ from PIL import Image
+ from torchvision import transforms
+@@ -124,6 +125,26 @@ def parse_args_unpaired_training():
+     parser.add_argument("--lambda_cycle_lpips", default=10.0, type=float)
+     parser.add_argument("--lambda_idt_lpips", default=1.0, type=float)
+ 
++    # granular structure-preservation (instruction §12.3)
++    parser.add_argument("--granular_mode", type=str, default="none",
++                        choices=["none", "binary", "fuzzy", "fuzzy_rough"])
++    parser.add_argument("--lambda_granular", type=float, default=0.10)
++    parser.add_argument("--granular_mask_dir", type=str, default=None)
++    parser.add_argument("--granular_fine_patch_size", type=int, default=8)
++    parser.add_argument("--granular_coarse_patch_size", type=int, default=16)
++    parser.add_argument("--granular_fine_balls", type=int, default=16)
++    parser.add_argument("--granular_coarse_balls", type=int, default=4)
++    parser.add_argument("--granular_max_fine_balls", type=int, default=64)
++    parser.add_argument("--granular_max_coarse_balls", type=int, default=16)
++    parser.add_argument("--granular_binary_threshold", type=float, default=0.50)
++    parser.add_argument("--granular_lower_percentile", type=float, default=10)
++    parser.add_argument("--granular_upper_percentile", type=float, default=90)
++    parser.add_argument("--granular_boundary_penalty", type=float, default=0.25)
++    parser.add_argument("--granular_purity_threshold", type=float, default=0.80)
++    parser.add_argument("--granular_fine_weight", type=float, default=0.60)
++    parser.add_argument("--granular_coarse_weight", type=float, default=0.40)
++    parser.add_argument("--granular_seed", type=int, default=42)
++
+     # args for dataset and dataloader options
+     parser.add_argument("--dataset_folder", required=True, type=str)
+     parser.add_argument("--train_img_prep", required=True)
+@@ -308,30 +329,73 @@ class PairedDataset(torch.utils.data.Dataset):
+         }
+ 
+ 
++def _load_mask_tensor(mask_path: str) -> torch.Tensor:
++    """Load a 286×286 mask from .npz/.pt/.npy → float tensor (1,H,W) in [0,1]."""
++    if mask_path.endswith(".npz"):
++        data = np.load(mask_path)
++        arr = data["mask"] if "mask" in data else data[data.files[0]]
++        t = torch.from_numpy(np.asarray(arr, dtype=np.float32))
++    elif mask_path.endswith(".pt"):
++        obj = torch.load(mask_path, map_location="cpu")
++        t = obj["mask"] if isinstance(obj, dict) else obj
++        t = t.float()
++    elif mask_path.endswith(".npy"):
++        t = torch.from_numpy(np.load(mask_path).astype(np.float32))
++    else:
++        raise FileNotFoundError(mask_path)
++    if t.dim() == 2:
++        t = t.unsqueeze(0)
++    return t.clamp(0, 1)
++
++
++def _aligned_train_pair(img_pil: Image.Image, mask_t: torch.Tensor | None):
++    """Resize 286, same random crop 256 + optional flip for image and mask."""
++    img = F.resize(img_pil, [286, 286], interpolation=transforms.InterpolationMode.LANCZOS)
++    img_t = F.to_tensor(img)  # 3,286,286
++    if mask_t is None:
++        mask_t = torch.ones(1, 286, 286, dtype=torch.float32)
++    else:
++        if mask_t.shape[-2:] != (286, 286):
++            mask_t = F.resize(mask_t, [286, 286], interpolation=transforms.InterpolationMode.BILINEAR)
++        mask_t = mask_t.float().clamp(0, 1)
++
++    i, j, h, w = transforms.RandomCrop.get_params(img_t, output_size=(256, 256))
++    img_t = F.crop(img_t, i, j, h, w)
++    mask_t = F.crop(mask_t, i, j, h, w)
++    if random.random() < 0.5:
++        img_t = F.hflip(img_t)
++        mask_t = F.hflip(mask_t)
++    img_t = F.normalize(img_t, mean=[0.5], std=[0.5])
++    return img_t, mask_t
++
++
+ class UnpairedDataset(torch.utils.data.Dataset):
+-    def __init__(self, dataset_folder, split, image_prep, tokenizer):
++    def __init__(self, dataset_folder, split, image_prep, tokenizer,
++                 granular_mode="none", granular_mask_dir=None):
+         """
+-        A dataset class for loading unpaired data samples from two distinct domains (source and target),
+-        typically used in unsupervised learning tasks like image-to-image translation.
++        Unpaired dataset with optional precomputed granular masks (instruction §10.2 / §12.4).
+ 
+-        The class supports loading images from specified dataset folders, applying predefined image
+-        preprocessing transformations, and utilizing fixed textual prompts (captions) for each domain,
+-        tokenized using a provided tokenizer.
+-
+-        Parameters:
+-        - dataset_folder (str): Base directory of the dataset containing subdirectories (train_A, train_B, test_A, test_B)
+-        - split (str): Indicates the dataset split to use. Expected values are 'train' or 'test'.
+-        - image_prep (str): he image preprocessing transformation to apply to each image.
+-        - tokenizer: The tokenizer used for tokenizing the captions (or prompts).
++        When granular_mode != 'none', loads masks from granular_mask_dir/{train_A|train_B}/
++        and applies the same crop/flip as the RGB image.
+         """
+         super().__init__()
+         if split == "train":
+             self.source_folder = os.path.join(dataset_folder, "train_A")
+             self.target_folder = os.path.join(dataset_folder, "train_B")
++            self.src_split_name = "train_A"
++            self.tgt_split_name = "train_B"
+         elif split == "test":
+             self.source_folder = os.path.join(dataset_folder, "test_A")
+             self.target_folder = os.path.join(dataset_folder, "test_B")
++            self.src_split_name = "test_A"
++            self.tgt_split_name = "test_B"
+         self.tokenizer = tokenizer
++        self.granular_mode = granular_mode or "none"
++        self.granular_mask_dir = granular_mask_dir
++        self.image_prep = image_prep
++        self.use_aligned = (
++            image_prep == "resize_286_randomcrop_256x256_hflip"
++        )
+         with open(os.path.join(dataset_folder, "fixed_prompt_a.txt"), "r") as f:
+             self.fixed_caption_src = f.read().strip()
+             self.input_ids_src = self.tokenizer(
+@@ -345,7 +409,6 @@ class UnpairedDataset(torch.utils.data.Dataset):
+                 self.fixed_caption_tgt, max_length=self.tokenizer.model_max_length,
+                 padding="max_length", truncation=True, return_tensors="pt"
+             ).input_ids
+-        # find all images in the source and target folders with all IMG extensions
+         self.l_imgs_src = []
+         for ext in ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif"]:
+             self.l_imgs_src.extend(glob(os.path.join(self.source_folder, ext)))
+@@ -355,39 +418,20 @@ class UnpairedDataset(torch.utils.data.Dataset):
+         self.T = build_transform(image_prep)
+ 
+     def __len__(self):
+-        """
+-        Returns:
+-        int: The total number of items in the dataset.
+-        """
+         return len(self.l_imgs_src) + len(self.l_imgs_tgt)
+ 
+-    def __getitem__(self, index):
+-        """
+-        Fetches a pair of unaligned images from the source and target domains along with their 
+-        corresponding tokenized captions.
+-
+-        For the source domain, if the requested index is within the range of available images,
+-        the specific image at that index is chosen. If the index exceeds the number of source
+-        images, a random source image is selected. For the target domain,
+-        an image is always randomly selected, irrespective of the index, to maintain the 
+-        unpaired nature of the dataset.
+-
+-        Both images are preprocessed according to the specified image transformation `T`, and normalized.
+-        The fixed captions for both domains
+-        are included along with their tokenized forms.
+-
+-        Parameters:
+-        - index (int): The index of the source image to retrieve.
++    def _mask_path_for(self, img_path: str, split_name: str) -> str | None:
++        if self.granular_mode == "none" or not self.granular_mask_dir:
++            return None
++        stem = os.path.splitext(os.path.basename(img_path))[0]
++        cand = os.path.join(
++            self.granular_mask_dir, split_name, f"{stem}_mask_{self.granular_mode}.npz"
++        )
++        if os.path.isfile(cand):
++            return cand
++        raise FileNotFoundError(f"missing mask for {img_path}: expected {cand}")
+ 
+-        Returns:
+-        dict: A dictionary containing processed data for a single training example, with the following keys:
+-            - "pixel_values_src": The processed source image
+-            - "pixel_values_tgt": The processed target image
+-            - "caption_src": The fixed caption of the source domain.
+-            - "caption_tgt": The fixed caption of the target domain.
+-            - "input_ids_src": The source domain's fixed caption tokenized.
+-            - "input_ids_tgt": The target domain's fixed caption tokenized.
+-        """
++    def __getitem__(self, index):
+         if index < len(self.l_imgs_src):
+             img_path_src = self.l_imgs_src[index]
+         else:
+@@ -395,13 +439,25 @@ class UnpairedDataset(torch.utils.data.Dataset):
+         img_path_tgt = random.choice(self.l_imgs_tgt)
+         img_pil_src = Image.open(img_path_src).convert("RGB")
+         img_pil_tgt = Image.open(img_path_tgt).convert("RGB")
+-        img_t_src = F.to_tensor(self.T(img_pil_src))
+-        img_t_tgt = F.to_tensor(self.T(img_pil_tgt))
+-        img_t_src = F.normalize(img_t_src, mean=[0.5], std=[0.5])
+-        img_t_tgt = F.normalize(img_t_tgt, mean=[0.5], std=[0.5])
++
++        if self.use_aligned:
++            m_src_path = self._mask_path_for(img_path_src, self.src_split_name)
++            m_tgt_path = self._mask_path_for(img_path_tgt, self.tgt_split_name)
++            m_src = _load_mask_tensor(m_src_path) if m_src_path else None
++            m_tgt = _load_mask_tensor(m_tgt_path) if m_tgt_path else None
++            img_t_src, mask_src = _aligned_train_pair(img_pil_src, m_src)
++            img_t_tgt, mask_tgt = _aligned_train_pair(img_pil_tgt, m_tgt)
++        else:
++            img_t_src = F.normalize(F.to_tensor(self.T(img_pil_src)), mean=[0.5], std=[0.5])
++            img_t_tgt = F.normalize(F.to_tensor(self.T(img_pil_tgt)), mean=[0.5], std=[0.5])
++            mask_src = torch.ones(1, img_t_src.shape[-2], img_t_src.shape[-1])
++            mask_tgt = torch.ones(1, img_t_tgt.shape[-2], img_t_tgt.shape[-1])
++
+         return {
+             "pixel_values_src": img_t_src,
+             "pixel_values_tgt": img_t_tgt,
++            "granular_mask_src": mask_src,
++            "granular_mask_tgt": mask_tgt,
+             "caption_src": self.fixed_caption_src,
+             "caption_tgt": self.fixed_caption_tgt,
+             "input_ids_src": self.input_ids_src,
+diff --git a/src/train_cyclegan_turbo.py b/src/train_cyclegan_turbo.py
+index 2e3143c..956760f 100644
+--- a/src/train_cyclegan_turbo.py
++++ b/src/train_cyclegan_turbo.py
+@@ -1,9 +1,11 @@
+ import os
+ import gc
+ import copy
++import time
+ import lpips
+ import torch
+ import wandb
++from datetime import datetime, timezone
+ from glob import glob
+ import numpy as np
+ from accelerate import Accelerator
+@@ -20,14 +22,25 @@ from model import make_1step_sched
+ from cyclegan_turbo import CycleGAN_Turbo, VAE_encode, VAE_decode, initialize_unet, initialize_vae
+ from my_utils.training_utils import UnpairedDataset, build_transform, parse_args_unpaired_training
+ from my_utils.dino_struct import DinoStructureLoss
++from my_utils.structure_loss import structure_preservation_loss
++
++
++def _fmt_hms(seconds: float) -> str:
++    seconds = int(max(0, seconds))
++    h, rem = divmod(seconds, 3600)
++    m, s = divmod(rem, 60)
++    return f"{h:02d}:{m:02d}:{s:02d}"
+ 
+ 
+ def main(args):
+     accelerator = Accelerator(gradient_accumulation_steps=args.gradient_accumulation_steps, log_with=args.report_to)
+     set_seed(args.seed)
++    train_t0 = time.time()
++    train_start_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+ 
+     if accelerator.is_main_process:
+         os.makedirs(os.path.join(args.output_dir, "checkpoints"), exist_ok=True)
++        print(f"TRAIN_START {train_start_iso} output_dir={args.output_dir}")
+ 
+     tokenizer = AutoTokenizer.from_pretrained("stabilityai/sd-turbo", subfolder="tokenizer", revision=args.revision, use_fast=False,)
+     noise_scheduler_1step = make_1step_sched()
+@@ -73,7 +86,14 @@ def main(args):
+     optimizer_disc = torch.optim.AdamW(params_disc, lr=args.learning_rate, betas=(args.adam_beta1, args.adam_beta2),
+         weight_decay=args.adam_weight_decay, eps=args.adam_epsilon,)
+ 
+-    dataset_train = UnpairedDataset(dataset_folder=args.dataset_folder, image_prep=args.train_img_prep, split="train", tokenizer=tokenizer)
++    dataset_train = UnpairedDataset(
++        dataset_folder=args.dataset_folder,
++        image_prep=args.train_img_prep,
++        split="train",
++        tokenizer=tokenizer,
++        granular_mode=getattr(args, "granular_mode", "none"),
++        granular_mask_dir=getattr(args, "granular_mask_dir", None),
++    )
+     train_dataloader = torch.utils.data.DataLoader(dataset_train, batch_size=args.train_batch_size, shuffle=True, num_workers=args.dataloader_num_workers)
+     T_val = build_transform(args.val_img_prep)
+     fixed_caption_src = dataset_train.fixed_caption_src
+@@ -166,6 +186,8 @@ def main(args):
+         for step, batch in enumerate(train_dataloader):
+             l_acc = [unet, net_disc_a, net_disc_b, vae_enc, vae_dec]
+             with accelerator.accumulate(*l_acc):
++                loss_granular_a2b = torch.zeros((), device=accelerator.device)
++                loss_granular_b2a = torch.zeros((), device=accelerator.device)
+                 img_a = batch["pixel_values_src"].to(dtype=weight_dtype)
+                 img_b = batch["pixel_values_tgt"].to(dtype=weight_dtype)
+ 
+@@ -202,6 +224,16 @@ def main(args):
+                 fake_b = CycleGAN_Turbo.forward_with_networks(img_a, "a2b", vae_enc, unet, vae_dec, noise_scheduler_1step, timesteps, fixed_a2b_emb)
+                 loss_gan_a = net_disc_a(fake_b, for_G=True).mean() * args.lambda_gan
+                 loss_gan_b = net_disc_b(fake_a, for_G=True).mean() * args.lambda_gan
++                # Granular structure loss on existing fakes (no extra generator forward)
++                loss_granular_a2b = torch.zeros((), device=img_a.device)
++                loss_granular_b2a = torch.zeros((), device=img_a.device)
++                if getattr(args, "lambda_granular", 0.0) and getattr(args, "granular_mode", "none") != "none":
++                    mask_a = batch["granular_mask_src"].to(device=img_a.device, dtype=weight_dtype)
++                    mask_b = batch["granular_mask_tgt"].to(device=img_b.device, dtype=weight_dtype)
++                    loss_granular_a2b = structure_preservation_loss(img_a, fake_b, mask_a)
++                    loss_granular_b2a = structure_preservation_loss(img_b, fake_a, mask_b)
++                    loss_gan_a = loss_gan_a + args.lambda_granular * loss_granular_a2b
++                    loss_gan_b = loss_gan_b + args.lambda_granular * loss_granular_b2a
+                 accelerator.backward(loss_gan_a + loss_gan_b, retain_graph=False)
+                 if accelerator.sync_gradients:
+                     accelerator.clip_grad_norm_(params_gen, args.max_grad_norm)
+@@ -264,6 +296,13 @@ def main(args):
+             logs["disc_b"] = loss_D_B_fake.detach().item() + loss_D_B_real.detach().item()
+             logs["idt_a"] = loss_idt_a.detach().item()
+             logs["idt_b"] = loss_idt_b.detach().item()
++            logs["loss_granular_a2b"] = float(loss_granular_a2b.detach().item()) if torch.is_tensor(loss_granular_a2b) else 0.0
++            logs["loss_granular_b2a"] = float(loss_granular_b2a.detach().item()) if torch.is_tensor(loss_granular_b2a) else 0.0
++            if "granular_mask_src" in batch:
++                logs["mask_mean_src"] = float(batch["granular_mask_src"].float().mean().item())
++                logs["mask_mean_tgt"] = float(batch["granular_mask_tgt"].float().mean().item())
++                logs["mask_mass_src"] = float(batch["granular_mask_src"].float().sum().item())
++                logs["mask_mass_tgt"] = float(batch["granular_mask_tgt"].float().sum().item())
+ 
+             if accelerator.sync_gradients:
+                 progress_bar.update(1)
+@@ -290,7 +329,8 @@ def main(args):
+                                 gc.collect()
+                                 torch.cuda.empty_cache()
+ 
+-                    if global_step % args.checkpointing_steps == 1:
++                    # §12.6: checkpoint on step multiples and final step
++                    if (global_step % args.checkpointing_steps == 0) or (global_step == args.max_train_steps):
+                         outf = os.path.join(args.output_dir, "checkpoints", f"model_{global_step}.pkl")
+                         sd = {}
+                         sd["l_target_modules_encoder"] = l_modules_unet_encoder
+@@ -308,8 +348,8 @@ def main(args):
+                         gc.collect()
+                         torch.cuda.empty_cache()
+ 
+-                    # compute val FID and DINO-Struct scores
+-                    if global_step % args.validation_steps == 1:
++                    # compute val FID and DINO-Struct scores (§12.6)
++                    if (global_step % args.validation_steps == 0) or (global_step == args.max_train_steps):
+                         _timesteps = torch.tensor([noise_scheduler_1step.config.num_train_timesteps - 1] * 1, device="cuda").long()
+                         net_dino = DinoStructureLoss()
+                         """
+@@ -320,7 +360,7 @@ def main(args):
+                         l_dino_scores_a2b = []
+                         # get val input images from domain a
+                         for idx, input_img_path in enumerate(tqdm(l_images_src_test)):
+-                            if idx > args.validation_num_images and args.validation_num_images > 0:
++                            if args.validation_num_images > 0 and idx >= args.validation_num_images:
+                                 break
+                             outf = os.path.join(fid_output_dir, f"{idx}.png")
+                             with torch.no_grad():
+@@ -342,7 +382,11 @@ def main(args):
+                             custom_image_tranform=None)
+                         ed_mu, ed_sigma = np.mean(gen_features, axis=0), np.cov(gen_features, rowvar=False)
+                         score_fid_a2b = frechet_distance(a2b_ref_mu, a2b_ref_sigma, ed_mu, ed_sigma)
+-                        print(f"step={global_step}, fid(a2b)={score_fid_a2b:.2f}, dino(a2b)={dino_score_a2b:.3f}")
++                        _elapsed = time.time() - train_t0
++                        print(
++                            f"step={global_step}, elapsed_sec={_elapsed:.1f}, elapsed_hms={_fmt_hms(_elapsed)}, "
++                            f"fid(a2b)={score_fid_a2b:.2f}, dino(a2b)={dino_score_a2b:.3f}"
++                        )
+ 
+                         """
+                         compute FID for "B->A"
+@@ -352,7 +396,7 @@ def main(args):
+                         l_dino_scores_b2a = []
+                         # get val input images from domain b
+                         for idx, input_img_path in enumerate(tqdm(l_images_tgt_test)):
+-                            if idx > args.validation_num_images and args.validation_num_images > 0:
++                            if args.validation_num_images > 0 and idx >= args.validation_num_images:
+                                 break
+                             outf = os.path.join(fid_output_dir, f"{idx}.png")
+                             with torch.no_grad():
+@@ -374,9 +418,14 @@ def main(args):
+                             custom_image_tranform=None)
+                         ed_mu, ed_sigma = np.mean(gen_features, axis=0), np.cov(gen_features, rowvar=False)
+                         score_fid_b2a = frechet_distance(b2a_ref_mu, b2a_ref_sigma, ed_mu, ed_sigma)
+-                        print(f"step={global_step}, fid(b2a)={score_fid_b2a}, dino(b2a)={dino_score_b2a:.3f}")
++                        _elapsed = time.time() - train_t0
++                        print(
++                            f"step={global_step}, elapsed_sec={_elapsed:.1f}, elapsed_hms={_fmt_hms(_elapsed)}, "
++                            f"fid(b2a)={score_fid_b2a}, dino(b2a)={dino_score_b2a:.3f}"
++                        )
+                         logs["val/fid_a2b"], logs["val/fid_b2a"] = score_fid_a2b, score_fid_b2a
+                         logs["val/dino_struct_a2b"], logs["val/dino_struct_b2a"] = dino_score_a2b, dino_score_b2a
++                        logs["elapsed_sec"] = _elapsed
+                         del net_dino  # free up memory
+ 
+             progress_bar.set_postfix(**logs)
+@@ -384,6 +433,14 @@ def main(args):
+             if global_step >= args.max_train_steps:
+                 break
+ 
++    if accelerator.is_main_process:
++        total = time.time() - train_t0
++        end_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
++        print(
++            f"TRAIN_END {end_iso} total_elapsed_sec={total:.1f} "
++            f"total_elapsed_hms={_fmt_hms(total)} final_step={global_step}"
++        )
++
+ 
+ if __name__ == "__main__":
+     args = parse_args_unpaired_training()
