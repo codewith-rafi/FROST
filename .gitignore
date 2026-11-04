@@ -1,0 +1,42 @@
+# --- Datasets -------------------------------------------------------------
+# Datasets are kept on disk and are never committed.
+# Patterns are anchored to the repository root: a bare "horse2zebra/" would
+# also match manifests/horse2zebra/ and output/**/horse2zebra/ and silently
+# drop them.
+/100k/
+/labels/
+/horse2zebra/
+/data/*
+!/data/readme.md
+
+# --- Large binary artifacts -----------------------------------------------
+output/**/checkpoints/
+output/**/eval_final/
+*.pkl
+*.zip
+
+# --- Caches and run scaffolding -------------------------------------------
+.cache/
+.tmux/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+wandb/
+
+# --- Local environments and editors ---------------------------------------
+.venv/
+venv/
+.env
+.idea/
+.vscode/
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# --- Private lab documentation --------------------------------------------
+# Contains host address, SSH port and login account; never commit.
+02-Member-Guide-and-Usage-Rules.en.md
+
+# --- Team-internal planning --------------------------------------------
+commit_plan.md
