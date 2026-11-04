@@ -1,0 +1,39 @@
+# Frozen Python stack for the Frost course runs (conda env `rafi`).
+#
+# Verified installed versions on the training host (2026-11-02):
+#   python 3.11.16, torch 2.10.0+cu128, torchvision 0.25.0+cu128
+#
+# Install order: create a py3.11 env, install torch for your CUDA build, then this file.
+
+torch==2.10.0
+torchvision==0.25.0
+diffusers==0.42.0
+transformers==5.17.0
+peft==0.21.0
+accelerate==1.15.0
+
+numpy==2.4.6
+pillow==12.3.0
+scikit-learn
+
+# Evaluation metrics
+lpips
+clean-fid
+vision_aided_loss
+
+# Figures (scripts/make_qualitative_grids.py)
+matplotlib
+
+# Logging / utils
+wandb==0.31.0
+tqdm
+gdown
+opencv-python
+
+# pytest is used for the repo tests
+pytest
+
+# NOTE: xformers is deliberately NOT pinned/required.
+# xformers 0.0.35 has no kernel for RTX 5090 (sm_120); the course configs keep
+# enable_xformers_memory_efficient_attention=false and run native PyTorch SDPA.
+# Do not switch attention implementations between methods.
