@@ -1,0 +1,27 @@
+{
+  "frozen_at_utc": "2026-10-23T19:40:59Z",
+  "source_zip": "/workspace/rafi/horse2zebra.zip",
+  "raw_root": "/workspace/rafi/frost/horse2zebra",
+  "folder_names": "archive convention trainA/trainB/testA/testB (not yet renamed)",
+  "counts": {
+    "train_horses": 1067,
+    "train_zebras": 1334,
+    "test_horses": 120,
+    "test_zebras": 140,
+    "total_images": 2661
+  },
+  "per_folder": {
+    "trainA": 1067,
+    "trainB": 1334,
+    "testA": 120,
+    "testB": 140
+  },
+  "filename_overlaps": {
+    "trainA_cap_testA": 0,
+    "trainB_cap_testB": 0,
+    "trainA_cap_trainB": 0,
+    "testA_cap_testB": 0
+  },
+  "subsample": false,
+  "matches_instruction_counts": true
+}

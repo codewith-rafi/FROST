@@ -1,0 +1,42 @@
+{
+  "frozen_at_utc": "2026-10-23T19:42:15Z",
+  "source_zip": "/workspace/rafi/horse2zebra.zip",
+  "raw_root": "/workspace/rafi/frost/horse2zebra",
+  "trainer_root": "/workspace/rafi/frost/SourceCode/img2img-turbo/data/horse2zebra",
+  "link_type": "symlink",
+  "mapping": {
+    "trainA": "train_A",
+    "trainB": "train_B",
+    "testA": "test_A",
+    "testB": "test_B"
+  },
+  "counts": {
+    "train_A": 1067,
+    "train_B": 1334,
+    "test_A": 120,
+    "test_B": 140
+  },
+  "prompts": {
+    "fixed_prompt_a.txt": "a horse",
+    "fixed_prompt_b.txt": "a zebra"
+  },
+  "rgb_open_failures": 0,
+  "filename_overlaps": {
+    "train_A_cap_test_A": 0,
+    "train_B_cap_test_B": 0
+  },
+  "subsample": false,
+  "manifest_sha256": {
+    "train_A.txt": "e0c75a65bb8a5f49a398d46f8fe491950765fe4a7b10593ec6829f4c49262c40",
+    "train_B.txt": "a5289e617fbbf61b23482f53d9d79bf490688b595fe43f04072edfd104973767",
+    "test_A.txt": "4d4e5f1b58029aca596f083230a9dea3bceee6d89bac2996c65651c5af414cce",
+    "test_B.txt": "ea53f8a705627345ebb811d57feb374d9cee551e05770c13a365a1b8d15cf2d6",
+    "trainA.txt": "da34ef0a7dad09df3af479474222e985ce74963a97211889d254d55e60ed1544",
+    "trainB.txt": "ec90936f7eef8f00e77c3dcbc74b49741594282adaa444d82a3880c09836b717",
+    "testA.txt": "de2df05da372b54161deb98fae533023de3d7ae385757b8489a8601b57db8de8",
+    "testB.txt": "c7ab692048ef92b29c904ddd1e174e3af833f20127c7eab281771869d74f2df4",
+    "counts.json": "ef86cbaa8c0a2a65a7e3fc3f220d88035136eee5864cc32de62851767b0a3b25",
+    "AUDIT.md": "0fa0a0fc875b722f2472d4c21453297e242ad5ab2262dd8595668d009a8a89d6",
+    "freeze.json": "a4c697656c8e06a3ca47a61b8cde0efec54c911e86f0168d47c4f4ed87f13e8a"
+  }
+}

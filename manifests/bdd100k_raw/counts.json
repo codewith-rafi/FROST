@@ -1,0 +1,51 @@
+{
+  "frozen_at_utc": "2026-10-23T19:40:59Z",
+  "source_zip": "/workspace/rafi/bdd100k_images_100k.zip",
+  "raw_root": "/workspace/rafi/frost/100k",
+  "layout_note": "images at frost/100k/{{train,val,test}}; no images/ prefix; labels absent at audit time",
+  "counts": {
+    "train": 70000,
+    "val": 10000,
+    "test": 20000
+  },
+  "unique_equals_count": {
+    "train": true,
+    "val": true,
+    "test": true
+  },
+  "filename_overlaps": {
+    "train_cap_val": 0,
+    "train_cap_test": 0,
+    "val_cap_test": 0
+  },
+  "sample_open": [
+    {
+      "split": "train",
+      "name": "96f784ed-a3069de4.jpg",
+      "mode": "RGB",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "split": "val",
+      "name": "bd204fcd-75ab6967.jpg",
+      "mode": "RGB",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "split": "test",
+      "name": "d91c308d-90965127.jpg",
+      "mode": "RGB",
+      "size": [
+        1280,
+        720
+      ]
+    }
+  ],
+  "matches_official_split_sizes": true
+}

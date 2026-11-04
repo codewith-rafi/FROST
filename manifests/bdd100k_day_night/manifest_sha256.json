@@ -1,0 +1,9 @@
+{
+  "train_day.txt": "67f9c93432197a6c2ef78d20e21b23fd1bda17635821aca03d4057593306d7b6",
+  "train_night.txt": "1746432dbbdccbed3237b50990ebd0e42ee67295a025302bb03f8253efbe065c",
+  "val_day.txt": "90d4e8025492079f55b7c8ef11aa08dbdaf5a35d18311ee8232ea21ec7d9351d",
+  "val_night.txt": "53534b319f7b7c363df72bb4abfe56a288cc71266edc02003ad229f0b92f25ef",
+  "selection_config.json": "12d299fcbc19c9b119f707c5f7c1211ea45c4cdcb9b34fd4cc695d15d346cf17",
+  "weather_scene_distributions.json": "df4d1826c27aeb94310c8bf8ef5b9b747ae0f5bf4d0c3c9e79083d8b97e67ee2",
+  "AUDIT.md": "765a06ca3d9790651d55e027112bc33428183908d05e3cb4b09a12825b5eadf9"
+}

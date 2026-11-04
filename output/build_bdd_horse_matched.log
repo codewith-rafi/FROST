@@ -1,0 +1,9 @@
+BDD_DAY_NIGHT_FREEZE_OK
+{
+  "train_day": 1067,
+  "train_night": 1334,
+  "val_day": 120,
+  "val_night": 140
+}
+manifest_dir /workspace/rafi/frost/manifests/bdd100k_day_night
+out_dir /workspace/rafi/frost/SourceCode/img2img-turbo/data/bdd100k_day_night
