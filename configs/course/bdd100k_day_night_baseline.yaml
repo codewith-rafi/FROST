@@ -1,0 +1,35 @@
+# Course protocol — bdd100k_day_night / baseline
+protocol: course
+dataset: bdd100k_day_night
+method: baseline
+tmux_session: frost_bdd_baseline
+dataset_folder: data/bdd100k_day_night
+output_dir: OUTPUT_DIR_PLACEHOLDER  # launch_train.sh sets output/fresh_YYYYMMDD/...
+granular_mask_dir: null
+pretrained_model_name_or_path: stabilityai/sd-turbo
+train_img_prep: resize_286_randomcrop_256x256_hflip
+val_img_prep: no_resize
+learning_rate: 1.0e-5
+max_train_steps: 2000
+max_train_epochs: 1
+train_batch_size: 1
+gradient_accumulation_steps: 1
+seed: 42
+report_to: wandb
+tracker_project_name: granular_cycle_turbo
+enable_xformers_memory_efficient_attention: false
+allow_tf32: true
+validation_steps: 2000
+checkpointing_steps: 500
+validation_num_images: 0
+viz_freq: 0
+dataloader_num_workers: 0
+lambda_gan: 0.5
+lambda_idt: 1
+lambda_cycle: 1
+lambda_cycle_lpips: 10
+lambda_idt_lpips: 1
+lora_rank_unet: 128
+lora_rank_vae: 4
+granular_mode: none
+lambda_granular: 0.0
