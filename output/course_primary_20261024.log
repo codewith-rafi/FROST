@@ -1,0 +1,62 @@
+COURSE_PRIMARY_START 2026-10-24T12:24:59+00:00
+=== COURSE LAUNCH horse2zebra / baseline ===
+Started tmux session: frost_h2z_baseline
+Output: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/baseline
+Log: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/baseline/train.log
+Attach: tmux attach -t frost_h2z_baseline
+Waiting for tmux session frost_h2z_baseline to finish...
+=== COURSE DONE horse2zebra / baseline ===
+=== COURSE LAUNCH horse2zebra / binary ===
+Started tmux session: frost_h2z_binary
+Output: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/binary
+Log: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/binary/train.log
+Attach: tmux attach -t frost_h2z_binary
+Waiting for tmux session frost_h2z_binary to finish...
+=== COURSE DONE horse2zebra / binary ===
+=== COURSE LAUNCH horse2zebra / fuzzy ===
+Started tmux session: frost_h2z_fuzzy
+Output: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy
+Log: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy/train.log
+Attach: tmux attach -t frost_h2z_fuzzy
+Waiting for tmux session frost_h2z_fuzzy to finish...
+=== COURSE DONE horse2zebra / fuzzy ===
+=== COURSE LAUNCH horse2zebra / fuzzy_rough ===
+Started tmux session: frost_h2z_fuzzy_rough
+Output: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy_rough
+Log: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy_rough/train.log
+Attach: tmux attach -t frost_h2z_fuzzy_rough
+Waiting for tmux session frost_h2z_fuzzy_rough to finish...
+=== COURSE DONE horse2zebra / fuzzy_rough ===
+=== COURSE LAUNCH bdd100k_day_night / baseline ===
+Started tmux session: frost_bdd_baseline
+Output: /workspace/rafi/frost/output/fresh_20261024/bdd100k_day_night/baseline
+Log: /workspace/rafi/frost/output/fresh_20261024/bdd100k_day_night/baseline/train.log
+Attach: tmux attach -t frost_bdd_baseline
+Waiting for tmux session frost_bdd_baseline to finish...
+=== COURSE DONE bdd100k_day_night / baseline ===
+=== COURSE LAUNCH bdd100k_day_night / binary ===
+error creating /tmp/tmux-20003/default (No such file or directory)
+Started tmux session: frost_bdd_binary
+Output: /workspace/rafi/frost/output/fresh_20261024/bdd100k_day_night/binary
+Log: /workspace/rafi/frost/output/fresh_20261024/bdd100k_day_night/binary/train.log
+Attach: tmux attach -t frost_bdd_binary
+Waiting for tmux session frost_bdd_binary to finish...
+=== COURSE DONE bdd100k_day_night / binary ===
+=== COURSE LAUNCH bdd100k_day_night / fuzzy ===
+error creating /tmp/tmux-20003/default (No such file or directory)
+Started tmux session: frost_bdd_fuzzy
+Output: /workspace/rafi/frost/output/fresh_20261024/bdd100k_day_night/fuzzy
+Log: /workspace/rafi/frost/output/fresh_20261024/bdd100k_day_night/fuzzy/train.log
+Attach: tmux attach -t frost_bdd_fuzzy
+Waiting for tmux session frost_bdd_fuzzy to finish...
+=== COURSE DONE bdd100k_day_night / fuzzy ===
+=== COURSE LAUNCH bdd100k_day_night / fuzzy_rough ===
+error creating /tmp/tmux-20003/default (No such file or directory)
+Started tmux session: frost_bdd_fuzzy_rough
+Output: /workspace/rafi/frost/output/fresh_20261024/bdd100k_day_night/fuzzy_rough
+Log: /workspace/rafi/frost/output/fresh_20261024/bdd100k_day_night/fuzzy_rough/train.log
+Attach: tmux attach -t frost_bdd_fuzzy_rough
+Waiting for tmux session frost_bdd_fuzzy_rough to finish...
+=== COURSE DONE bdd100k_day_night / fuzzy_rough ===
+ALL_COURSE_PRIMARY_DONE 2026-10-26T22:08:19+00:00
+COURSE_PRIMARY_END 2026-10-26T22:08:19+00:00
