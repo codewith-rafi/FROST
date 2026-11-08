@@ -1,0 +1,22 @@
+=== RESUME fuzzy from model_1500 2026-10-29T02:31:33+00:00 ===
+/home/user0/.conda/envs/rafi/bin/python
+/home/user0/.conda/envs/rafi/bin/python
+RESUME_FROM=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy/checkpoints/model_1500.pkl (allowing nonempty checkpoint dir)
+Started tmux session: frost_bdd_fuzzy
+Output: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy
+Log: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy/train.log
+Attach: tmux attach -t frost_bdd_fuzzy
+Waiting for frost_bdd_fuzzy...
+fuzzy model_2000 size=1200371761
+=== COURSE continue fuzzy_rough 2026-10-29T05:41:52+00:00 ===
+=== COURSE SKIP bdd100k_day_night / baseline (existing model_2000.pkl 1200371761 bytes) ===
+=== COURSE SKIP bdd100k_day_night / binary (existing model_2000.pkl 1200371761 bytes) ===
+=== COURSE SKIP bdd100k_day_night / fuzzy (existing model_2000.pkl 1200371761 bytes) ===
+=== COURSE LAUNCH bdd100k_day_night / fuzzy_rough ===
+Started tmux session: frost_bdd_fuzzy_rough
+Output: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy_rough
+Log: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy_rough/train.log
+Attach: tmux attach -t frost_bdd_fuzzy_rough
+Waiting for tmux session frost_bdd_fuzzy_rough to finish...
+=== COURSE DONE bdd100k_day_night / fuzzy_rough (ok: model_2000.pkl) ===
+ALL_COURSE_BDD_DONE 2026-10-29T18:10:50+00:00
