@@ -1,0 +1,140 @@
+{
+  "horse2zebra/binary": {
+    "n_masks": 2401,
+    "n_pixels": 196392196,
+    "mean_mask_value": 0.4450640915320015,
+    "p10": 0.0,
+    "p50": 0.39990234375,
+    "p90": 1.0,
+    "frac_gt_0_75": 0.31260294579118614,
+    "frac_mid": 0.2770977162453033,
+    "frac_le_0_25": 0.41029933796351054,
+    "mode": "binary",
+    "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+    "mask_dir": "SourceCode/img2img-turbo/data/horse2zebra/masks",
+    "example_files": [
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1001_mask_binary.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1002_mask_binary.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1003_mask_binary.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1006_mask_binary.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1008_mask_binary.npz"
+    ]
+  },
+  "horse2zebra/fuzzy": {
+    "n_masks": 2401,
+    "n_pixels": 196392196,
+    "mean_mask_value": 0.22136092264951834,
+    "p10": 0.11334228515625,
+    "p50": 0.2171630859375,
+    "p90": 0.337158203125,
+    "frac_gt_0_75": 0.0,
+    "frac_mid": 0.35796374006633136,
+    "frac_le_0_25": 0.6420362599336686,
+    "mode": "fuzzy",
+    "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+    "mask_dir": "SourceCode/img2img-turbo/data/horse2zebra/masks",
+    "example_files": [
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1001_mask_fuzzy.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1002_mask_fuzzy.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1003_mask_fuzzy.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1006_mask_fuzzy.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1008_mask_fuzzy.npz"
+    ]
+  },
+  "horse2zebra/fuzzy_rough": {
+    "n_masks": 2401,
+    "n_pixels": 196392196,
+    "mean_mask_value": 0.11137596198063242,
+    "p10": 0.0268096923828125,
+    "p50": 0.1016845703125,
+    "p90": 0.2095947265625,
+    "frac_gt_0_75": 0.0,
+    "frac_mid": 0.034979368528472485,
+    "frac_le_0_25": 0.9650206314715275,
+    "mode": "fuzzy_rough",
+    "lower_approx_fraction": 0.005695750761909093,
+    "boundary_fraction": 0.15715793004320802,
+    "outside_upper_fraction": 0.8371463191948829,
+    "mean_boundary_width": 0.10983076814510881,
+    "n_images_with_stats": 2401,
+    "frac_sum_check": 1.0,
+    "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+    "mask_dir": "SourceCode/img2img-turbo/data/horse2zebra/masks",
+    "example_files": [
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1001_mask_fuzzy_rough.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1002_mask_fuzzy_rough.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1003_mask_fuzzy_rough.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1006_mask_fuzzy_rough.npz",
+      "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1008_mask_fuzzy_rough.npz"
+    ]
+  },
+  "bdd100k_day_night/binary": {
+    "n_masks": 2401,
+    "n_pixels": 196392196,
+    "mean_mask_value": 0.3756973297528973,
+    "p10": 0.0,
+    "p50": 0.39990234375,
+    "p90": 1.0,
+    "frac_gt_0_75": 0.26158616302655935,
+    "frac_mid": 0.24640695498918908,
+    "frac_le_0_25": 0.4920068819842516,
+    "mode": "binary",
+    "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+    "mask_dir": "SourceCode/img2img-turbo/data/bdd100k_day_night/masks",
+    "example_files": [
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/0081e27b-17bf4a9e_mask_binary.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00c12bd0-bb46e479_mask_binary.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00cef86b-204ea619_mask_binary.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00de601c-cfa2404b_mask_binary.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/013162b0-ddbabae8_mask_binary.npz"
+    ]
+  },
+  "bdd100k_day_night/fuzzy": {
+    "n_masks": 2401,
+    "n_pixels": 196392196,
+    "mean_mask_value": 0.14593709945508052,
+    "p10": 0.05316162109375,
+    "p50": 0.125,
+    "p90": 0.275390625,
+    "frac_gt_0_75": 0.0,
+    "frac_mid": 0.14022730312562928,
+    "frac_le_0_25": 0.8597726968743707,
+    "mode": "fuzzy",
+    "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+    "mask_dir": "SourceCode/img2img-turbo/data/bdd100k_day_night/masks",
+    "example_files": [
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/0081e27b-17bf4a9e_mask_fuzzy.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00c12bd0-bb46e479_mask_fuzzy.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00cef86b-204ea619_mask_fuzzy.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00de601c-cfa2404b_mask_fuzzy.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/013162b0-ddbabae8_mask_fuzzy.npz"
+    ]
+  },
+  "bdd100k_day_night/fuzzy_rough": {
+    "n_masks": 2401,
+    "n_pixels": 196392196,
+    "mean_mask_value": 0.056962209027764256,
+    "p10": 0.0019168853759765625,
+    "p50": 0.0372314453125,
+    "p90": 0.1446533203125,
+    "frac_gt_0_75": 0.0,
+    "frac_mid": 0.0065882200329385795,
+    "frac_le_0_25": 0.9934117799670614,
+    "mode": "fuzzy_rough",
+    "lower_approx_fraction": 0.009365698013784621,
+    "boundary_fraction": 0.10740569854415193,
+    "outside_upper_fraction": 0.8832286034420634,
+    "mean_boundary_width": 0.09996166809158294,
+    "n_images_with_stats": 2401,
+    "frac_sum_check": 1.0,
+    "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+    "mask_dir": "SourceCode/img2img-turbo/data/bdd100k_day_night/masks",
+    "example_files": [
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/0081e27b-17bf4a9e_mask_fuzzy_rough.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00c12bd0-bb46e479_mask_fuzzy_rough.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00cef86b-204ea619_mask_fuzzy_rough.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00de601c-cfa2404b_mask_fuzzy_rough.npz",
+      "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/013162b0-ddbabae8_mask_fuzzy_rough.npz"
+    ]
+  }
+}

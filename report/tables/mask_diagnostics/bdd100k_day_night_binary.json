@@ -1,0 +1,21 @@
+{
+  "n_masks": 2401,
+  "n_pixels": 196392196,
+  "mean_mask_value": 0.3756973297528973,
+  "p10": 0.0,
+  "p50": 0.39990234375,
+  "p90": 1.0,
+  "frac_gt_0_75": 0.26158616302655935,
+  "frac_mid": 0.24640695498918908,
+  "frac_le_0_25": 0.4920068819842516,
+  "mode": "binary",
+  "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+  "mask_dir": "SourceCode/img2img-turbo/data/bdd100k_day_night/masks",
+  "example_files": [
+    "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/0081e27b-17bf4a9e_mask_binary.npz",
+    "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00c12bd0-bb46e479_mask_binary.npz",
+    "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00cef86b-204ea619_mask_binary.npz",
+    "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/00de601c-cfa2404b_mask_binary.npz",
+    "SourceCode/img2img-turbo/data/bdd100k_day_night/masks/train_A/013162b0-ddbabae8_mask_binary.npz"
+  ]
+}

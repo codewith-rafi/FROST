@@ -1,0 +1,21 @@
+{
+  "n_masks": 2401,
+  "n_pixels": 196392196,
+  "mean_mask_value": 0.4450640915320015,
+  "p10": 0.0,
+  "p50": 0.39990234375,
+  "p90": 1.0,
+  "frac_gt_0_75": 0.31260294579118614,
+  "frac_mid": 0.2770977162453033,
+  "frac_le_0_25": 0.41029933796351054,
+  "mode": "binary",
+  "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+  "mask_dir": "SourceCode/img2img-turbo/data/horse2zebra/masks",
+  "example_files": [
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1001_mask_binary.npz",
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1002_mask_binary.npz",
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1003_mask_binary.npz",
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1006_mask_binary.npz",
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1008_mask_binary.npz"
+  ]
+}

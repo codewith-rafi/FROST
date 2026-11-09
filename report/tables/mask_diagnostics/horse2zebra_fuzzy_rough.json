@@ -1,0 +1,27 @@
+{
+  "n_masks": 2401,
+  "n_pixels": 196392196,
+  "mean_mask_value": 0.11137596198063242,
+  "p10": 0.0268096923828125,
+  "p50": 0.1016845703125,
+  "p90": 0.2095947265625,
+  "frac_gt_0_75": 0.0,
+  "frac_mid": 0.034979368528472485,
+  "frac_le_0_25": 0.9650206314715275,
+  "mode": "fuzzy_rough",
+  "lower_approx_fraction": 0.005695750761909093,
+  "boundary_fraction": 0.15715793004320802,
+  "outside_upper_fraction": 0.8371463191948829,
+  "mean_boundary_width": 0.10983076814510881,
+  "n_images_with_stats": 2401,
+  "frac_sum_check": 1.0,
+  "operationalization": "Region fractions are threshold-based approximations: stored artifacts keep ball-level L/U and the final mask, not per-pixel membership a_p or ball assignment maps. L and U are computed per image as 0.6*mean(fine) + 0.4*mean(coarse) from stats.npz, matching the \u00a77.5 scale weights.",
+  "mask_dir": "SourceCode/img2img-turbo/data/horse2zebra/masks",
+  "example_files": [
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1001_mask_fuzzy_rough.npz",
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1002_mask_fuzzy_rough.npz",
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1003_mask_fuzzy_rough.npz",
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1006_mask_fuzzy_rough.npz",
+    "SourceCode/img2img-turbo/data/horse2zebra/masks/train_A/n02381460_1008_mask_fuzzy_rough.npz"
+  ]
+}
