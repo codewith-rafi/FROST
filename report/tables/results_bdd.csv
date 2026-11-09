@@ -1,0 +1,5 @@
+method,fid_a2b,fid_b2a,dino_a2b,dino_a2b_std,dino_b2a,dino_b2a_std,verdict_a2b,verdict_b2a,verdict_overall
+baseline,100.739824,125.493706,0.018022,0.007046,0.032207,0.013456,-,-,-
+binary,96.496975,127.360744,0.021926,0.009235,0.028808,0.011561,distribution trade-off,structure trade-off,mixed
+fuzzy,91.069714,124.186836,0.019284,0.006098,0.024676,0.010334,distribution trade-off,better overall,mixed
+fuzzy_rough,100.903806,126.088571,0.019126,0.006627,0.023827,0.009600,worse overall,structure trade-off,mixed
