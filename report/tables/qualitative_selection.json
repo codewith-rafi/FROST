@@ -1,0 +1,118 @@
+{
+  "horse2zebra/a2b": {
+    "split": "test_A",
+    "method": "sha256('42:<filename>') ascending, first N in the sorted test list",
+    "n_total": 120,
+    "stems": [
+      "n02381460_7170",
+      "n02381460_2050",
+      "n02381460_5090",
+      "n02381460_4370",
+      "n02381460_1360",
+      "n02381460_1090"
+    ],
+    "files": [
+      "n02381460_7170.jpg",
+      "n02381460_2050.jpg",
+      "n02381460_5090.jpg",
+      "n02381460_4370.jpg",
+      "n02381460_1360.jpg",
+      "n02381460_1090.jpg"
+    ],
+    "index_in_sorted_test_list": [
+      99,
+      30,
+      81,
+      61,
+      13,
+      3
+    ]
+  },
+  "horse2zebra/b2a": {
+    "split": "test_B",
+    "method": "sha256('42:<filename>') ascending, first N in the sorted test list",
+    "n_total": 140,
+    "stems": [
+      "n02391049_2480",
+      "n02391049_2410",
+      "n02391049_2790",
+      "n02391049_400",
+      "n02391049_2420",
+      "n02391049_3450"
+    ],
+    "files": [
+      "n02391049_2480.jpg",
+      "n02391049_2410.jpg",
+      "n02391049_2790.jpg",
+      "n02391049_400.jpg",
+      "n02391049_2420.jpg",
+      "n02391049_3450.jpg"
+    ],
+    "index_in_sorted_test_list": [
+      41,
+      37,
+      51,
+      77,
+      38,
+      71
+    ]
+  },
+  "bdd100k_day_night/a2b": {
+    "split": "test_A",
+    "method": "sha256('42:<filename>') ascending, first N in the sorted test list",
+    "n_total": 120,
+    "stems": [
+      "b69b040b-15424e43",
+      "c7ec3b49-2dea9747",
+      "c16e5581-1b1317e2",
+      "baefe65c-de9ef3eb",
+      "c5c352c8-c97b0943",
+      "bf5ea8d2-108ab9c6"
+    ],
+    "files": [
+      "b69b040b-15424e43.jpg",
+      "c7ec3b49-2dea9747.jpg",
+      "c16e5581-1b1317e2.jpg",
+      "baefe65c-de9ef3eb.jpg",
+      "c5c352c8-c97b0943.jpg",
+      "bf5ea8d2-108ab9c6.jpg"
+    ],
+    "index_in_sorted_test_list": [
+      21,
+      105,
+      71,
+      45,
+      92,
+      62
+    ]
+  },
+  "bdd100k_day_night/b2a": {
+    "split": "test_B",
+    "method": "sha256('42:<filename>') ascending, first N in the sorted test list",
+    "n_total": 140,
+    "stems": [
+      "c6ed0e98-491efc53",
+      "c57906c2-9696bf52",
+      "c25d979a-8467d479",
+      "c1f35f18-419afa5e",
+      "b1d4b62c-89eeb5d3",
+      "b8a52657-64748163"
+    ],
+    "files": [
+      "c6ed0e98-491efc53.jpg",
+      "c57906c2-9696bf52.jpg",
+      "c25d979a-8467d479.jpg",
+      "c1f35f18-419afa5e.jpg",
+      "b1d4b62c-89eeb5d3.jpg",
+      "b8a52657-64748163.jpg"
+    ],
+    "index_in_sorted_test_list": [
+      116,
+      105,
+      92,
+      90,
+      1,
+      37
+    ]
+  }
+}
