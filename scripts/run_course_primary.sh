@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 # Run eight course trainings: Horse×4 then BDD×4.
+# All eight runs share one FRESH_DATE folder, even if the sequence crosses midnight.
 set -euo pipefail
 
 FROST_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CFG_DIR="$FROST_ROOT/configs/course"
 LAUNCH="$FROST_ROOT/scripts/launch_train.sh"
 DATA="$FROST_ROOT/data"
+FRESH_DATE="${FRESH_DATE:-$(date +%Y%m%d)}"
+FRESH_ROOT="${FRESH_ROOT:-$FROST_ROOT/output/fresh_${FRESH_DATE}}"
+export FRESH_DATE FRESH_ROOT
 
-if [[ "${CUDA_VISIBLE_DEVICES:-1}" == "0" ]]; then
-  echo "ERROR: course protocol forbids GPU 0. Use CUDA_VISIBLE_DEVICES=1." >&2
-  exit 1
-fi
+export TMUX_TMPDIR="${TMUX_TMPDIR:-$FROST_ROOT/.tmux}"
+mkdir -p "$TMUX_TMPDIR"
 
 check_masks() {
   local ds="$1"

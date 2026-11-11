@@ -16,11 +16,6 @@ export FRESH_DATE FRESH_ROOT
 export TMUX_TMPDIR="${TMUX_TMPDIR:-$FROST_ROOT/.tmux}"
 mkdir -p "$TMUX_TMPDIR"
 
-if [[ "${CUDA_VISIBLE_DEVICES:-1}" == "0" ]]; then
-  echo "ERROR: course protocol forbids GPU 0. Use CUDA_VISIBLE_DEVICES=1." >&2
-  exit 1
-fi
-
 MIN_PKL_BYTES=$((1024 * 1024 * 1024))  # 1GiB
 
 pkl_ok() {

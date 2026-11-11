@@ -9,9 +9,14 @@ VENDOR="$FROST_ROOT/vendor/img2img-turbo"
 DATA_DIR="$FROST_ROOT/data/$DATASET"
 MASK_DIR="$DATA_DIR/masks"
 SESSION="frost_masks_${DATASET}"
-PYTHON="${PYTHON:-/home/user0/.conda/envs/rafi/bin/python}"
+PYTHON="${PYTHON:-$(command -v python || true)}"
 LOG="$FROST_ROOT/output/mask_precompute_${DATASET}.log"
 mkdir -p "$(dirname "$LOG")" "$MASK_DIR"
+
+if [[ -z "$PYTHON" || ! -x "$PYTHON" ]]; then
+  echo "ERROR: python not found ('$PYTHON'). Activate your env or set PYTHON=/path/to/python." >&2
+  exit 1
+fi
 
 if [[ ! -d "$DATA_DIR/train_A" ]]; then
   echo "ERROR: missing $DATA_DIR/train_A" >&2
@@ -26,8 +31,7 @@ fi
 WORKERS="${MASK_WORKERS:-12}"
 tmux new-session -d -s "$SESSION" -c "$FROST_ROOT" bash -lc "
 set -euo pipefail
-source /opt/conda/etc/profile.d/conda.sh
-conda activate rafi
+export PATH='$(dirname "$PYTHON")':\$PATH
 export PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=1
 export MKL_NUM_THREADS=1

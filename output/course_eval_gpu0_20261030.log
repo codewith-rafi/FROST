@@ -1,0 +1,100 @@
+=== COURSE EVAL START 2026-10-29T20:21:37+00:00 CUDA_VISIBLE_DEVICES=0 ===
+/home/user0/.conda/envs/rafi/bin/python
+/home/user0/.conda/envs/rafi/bin/python
+=== COURSE EVAL LAUNCH horse2zebra / baseline ===
+CFG=/workspace/rafi/frost/output/fresh_20261024/horse2zebra/baseline/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261024/horse2zebra/baseline/checkpoints/model_2000.pkl SESSION=frost_eval_horse2zebra_baseline
+Started tmux session: frost_eval_horse2zebra_baseline
+Log: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/baseline/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_horse2zebra_baseline to finish...
+=== COURSE EVAL DONE horse2zebra / baseline ===
+  fid_a2b=56.0516 fid_b2a=163.3395 dino_a2b=0.018623263256934783 dino_b2a=0.017039847956039012
+=== COURSE EVAL LAUNCH horse2zebra / binary ===
+CFG=/workspace/rafi/frost/output/fresh_20261024/horse2zebra/binary/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261024/horse2zebra/binary/checkpoints/model_2000.pkl SESSION=frost_eval_horse2zebra_binary
+Started tmux session: frost_eval_horse2zebra_binary
+Log: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/binary/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_horse2zebra_binary to finish...
+=== COURSE EVAL DONE horse2zebra / binary ===
+  fid_a2b=49.9145 fid_b2a=166.0005 dino_a2b=0.01998754693971326 dino_b2a=0.016627129503259702
+=== COURSE EVAL LAUNCH horse2zebra / fuzzy ===
+CFG=/workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy/checkpoints/model_2000.pkl SESSION=frost_eval_horse2zebra_fuzzy
+Started tmux session: frost_eval_horse2zebra_fuzzy
+Log: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_horse2zebra_fuzzy to finish...
+=== COURSE EVAL DONE horse2zebra / fuzzy ===
+  fid_a2b=49.7487 fid_b2a=160.2574 dino_a2b=0.02005953131398807 dino_b2a=0.017634114806008128
+=== COURSE EVAL LAUNCH horse2zebra / fuzzy_rough ===
+CFG=/workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy_rough/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy_rough/checkpoints/model_2000.pkl SESSION=frost_eval_horse2zebra_fuzzy_rough
+Started tmux session: frost_eval_horse2zebra_fuzzy_rough
+Log: /workspace/rafi/frost/output/fresh_20261024/horse2zebra/fuzzy_rough/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_horse2zebra_fuzzy_rough to finish...
+=== COURSE EVAL DONE horse2zebra / fuzzy_rough ===
+  fid_a2b=51.5349 fid_b2a=163.6094 dino_a2b=0.020671580832762024 dino_b2a=0.016945115323843702
+=== COURSE EVAL LAUNCH bdd100k_day_night / baseline ===
+CFG=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/baseline/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/baseline/checkpoints/model_2000.pkl SESSION=frost_eval_bdd100k_day_night_baseline
+Started tmux session: frost_eval_bdd100k_day_night_baseline
+Log: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/baseline/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_bdd100k_day_night_baseline to finish...
+=== COURSE EVAL DONE bdd100k_day_night / baseline ===
+  fid_a2b=100.7398 fid_b2a=125.4937 dino_a2b=0.018022030205853905 dino_b2a=0.032206622946874375
+=== COURSE EVAL LAUNCH bdd100k_day_night / binary ===
+CFG=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/checkpoints/model_2000.pkl SESSION=frost_eval_bdd100k_day_night_binary
+Started tmux session: frost_eval_bdd100k_day_night_binary
+Log: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_bdd100k_day_night_binary to finish...
+
+===== RELAUNCH 2026-10-30T10:56:12+00:00 after Inception precache (95607719 bytes) =====
+=== COURSE EVAL START 2026-10-30T10:56:17+00:00 CUDA_VISIBLE_DEVICES=0 ===
+/home/user0/.conda/envs/rafi/bin/python
+/home/user0/.conda/envs/rafi/bin/python
+=== COURSE EVAL SKIP horse2zebra / baseline (existing metrics.json) ===
+=== COURSE EVAL SKIP horse2zebra / binary (existing metrics.json) ===
+=== COURSE EVAL SKIP horse2zebra / fuzzy (existing metrics.json) ===
+=== COURSE EVAL SKIP horse2zebra / fuzzy_rough (existing metrics.json) ===
+=== COURSE EVAL SKIP bdd100k_day_night / baseline (existing metrics.json) ===
+=== COURSE EVAL LAUNCH bdd100k_day_night / binary ===
+CFG=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/checkpoints/model_2000.pkl SESSION=frost_eval_bdd100k_day_night_binary
+Started tmux session: frost_eval_bdd100k_day_night_binary
+Log: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_bdd100k_day_night_binary to finish...
+
+===== RELAUNCH2 2026-10-30T12:30:32+00:00 resume BDD binary→fuzzy→fuzzy_rough =====
+=== COURSE EVAL START 2026-10-30T12:30:38+00:00 CUDA_VISIBLE_DEVICES=0 ===
+/home/user0/.conda/envs/rafi/bin/python
+/home/user0/.conda/envs/rafi/bin/python
+=== COURSE EVAL SKIP horse2zebra / baseline (existing metrics.json) ===
+=== COURSE EVAL SKIP horse2zebra / binary (existing metrics.json) ===
+=== COURSE EVAL SKIP horse2zebra / fuzzy (existing metrics.json) ===
+=== COURSE EVAL SKIP horse2zebra / fuzzy_rough (existing metrics.json) ===
+=== COURSE EVAL SKIP bdd100k_day_night / baseline (existing metrics.json) ===
+=== COURSE EVAL LAUNCH bdd100k_day_night / binary ===
+CFG=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/checkpoints/model_2000.pkl SESSION=frost_eval_bdd100k_day_night_binary
+Started tmux session: frost_eval_bdd100k_day_night_binary
+Log: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/binary/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_bdd100k_day_night_binary to finish...
+=== COURSE EVAL DONE bdd100k_day_night / binary ===
+  fid_a2b=96.4970 fid_b2a=127.3607 dino_a2b=0.021926375362090765 dino_b2a=0.02880792167769479
+=== COURSE EVAL LAUNCH bdd100k_day_night / fuzzy ===
+CFG=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy/checkpoints/model_2000.pkl SESSION=frost_eval_bdd100k_day_night_fuzzy
+Started tmux session: frost_eval_bdd100k_day_night_fuzzy
+Log: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_bdd100k_day_night_fuzzy to finish...
+=== COURSE EVAL DONE bdd100k_day_night / fuzzy ===
+  fid_a2b=91.0697 fid_b2a=124.1868 dino_a2b=0.019283543203103666 dino_b2a=0.024675838403137668
+=== COURSE EVAL LAUNCH bdd100k_day_night / fuzzy_rough ===
+CFG=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy_rough/config.yaml PKL=/workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy_rough/checkpoints/model_2000.pkl SESSION=frost_eval_bdd100k_day_night_fuzzy_rough
+Started tmux session: frost_eval_bdd100k_day_night_fuzzy_rough
+Log: /workspace/rafi/frost/output/fresh_20261027/bdd100k_day_night/fuzzy_rough/eval.log
+CUDA_VISIBLE_DEVICES=0
+Waiting for tmux session frost_eval_bdd100k_day_night_fuzzy_rough to finish...
+=== COURSE EVAL DONE bdd100k_day_night / fuzzy_rough ===
+  fid_a2b=100.9038 fid_b2a=126.0886 dino_a2b=0.019126258722584073 dino_b2a=0.023827018149729286
+ALL_COURSE_EVAL_DONE 2026-10-30T22:22:38+00:00

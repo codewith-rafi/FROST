@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
 # Sequential offline FID+DINO eval for all 8 course runs (horse×4 then BDD×4).
 # Uses resolved run config.yaml (not configs/course placeholders).
-# Requires CUDA_VISIBLE_DEVICES=0: the final evaluation pass ran on GPU 0 while GPU 1 was occupied.
+# Env overrides: PYTHON, CUDA_VISIBLE_DEVICES (default 0; the reported evaluation used GPU 0),
+#   HORSE_RUNS / BDD_RUNS: run folders relative to the project root
+#   (defaults: the archived output/fresh_20261024/horse2zebra and output/fresh_20261027/bdd100k_day_night).
 set -euo pipefail
 
 FROST_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EVAL_LAUNCH="$FROST_ROOT/scripts/eval_checkpoint.sh"
-PYTHON="${PYTHON:-/home/user0/.conda/envs/rafi/bin/python}"
+PYTHON="${PYTHON:-$(command -v python || true)}"
+export PYTHON
+export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
+HORSE_RUNS="${HORSE_RUNS:-output/fresh_20261024/horse2zebra}"
+BDD_RUNS="${BDD_RUNS:-output/fresh_20261027/bdd100k_day_night}"
 
 export TMUX_TMPDIR="${TMUX_TMPDIR:-$FROST_ROOT/.tmux}"
 mkdir -p "$TMUX_TMPDIR"
 
-if [[ "${CUDA_VISIBLE_DEVICES:-}" != "0" ]]; then
-  echo "ERROR: run_course_eval.sh hard-requires CUDA_VISIBLE_DEVICES=0 (got '${CUDA_VISIBLE_DEVICES:-unset}')." >&2
+if [[ -z "$PYTHON" || ! -x "$PYTHON" ]]; then
+  echo "ERROR: python not found ('$PYTHON'). Activate your env or set PYTHON=/path/to/python." >&2
   exit 1
 fi
 
@@ -43,17 +49,14 @@ sys.exit(0)
 PY
 }
 
-# dataset:method:run_dir (relative to FROST_ROOT/output)
-RUNS=(
-  horse2zebra:baseline:fresh_20261024/horse2zebra/baseline
-  horse2zebra:binary:fresh_20261024/horse2zebra/binary
-  horse2zebra:fuzzy:fresh_20261024/horse2zebra/fuzzy
-  horse2zebra:fuzzy_rough:fresh_20261024/horse2zebra/fuzzy_rough
-  bdd100k_day_night:baseline:fresh_20261027/bdd100k_day_night/baseline
-  bdd100k_day_night:binary:fresh_20261027/bdd100k_day_night/binary
-  bdd100k_day_night:fuzzy:fresh_20261027/bdd100k_day_night/fuzzy
-  bdd100k_day_night:fuzzy_rough:fresh_20261027/bdd100k_day_night/fuzzy_rough
-)
+# dataset:method:run_dir (relative to FROST_ROOT)
+RUNS=()
+for method in baseline binary fuzzy fuzzy_rough; do
+  RUNS+=("horse2zebra:$method:$HORSE_RUNS/$method")
+done
+for method in baseline binary fuzzy fuzzy_rough; do
+  RUNS+=("bdd100k_day_night:$method:$BDD_RUNS/$method")
+done
 
 echo "=== COURSE EVAL START $(date -Iseconds) CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES ==="
 "$PYTHON" -c "import sys; print(sys.executable)"
@@ -61,7 +64,7 @@ which python || true
 
 for entry in "${RUNS[@]}"; do
   IFS=: read -r ds method rel <<<"$entry"
-  OUT="$FROST_ROOT/output/$rel"
+  OUT="$FROST_ROOT/$rel"
   CFG="$OUT/config.yaml"
   PKL="$OUT/checkpoints/model_2000.pkl"
   METRICS="$OUT/metrics.json"

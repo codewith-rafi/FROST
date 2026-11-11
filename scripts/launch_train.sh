@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
-# Launch one frost train run from a YAML config (tmux + tee + lab locks).
+# Launch one frost train run from a YAML config (tmux + tee).
 # Usage: bash scripts/launch_train.sh configs/course/horse2zebra_baseline.yaml
+# Env overrides: PYTHON, ACCEL, CUDA_VISIBLE_DEVICES (default 0), HF_ENDPOINT,
+#                FRESH_DATE / FRESH_ROOT, RESUME_FROM, MAIN_PROCESS_PORT.
 set -euo pipefail
 
 FROST_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CFG="${1:?usage: launch_train.sh <config.yaml>}"
 CFG="$(cd "$(dirname "$CFG")" && pwd)/$(basename "$CFG")"
 
-PYTHON="${PYTHON:-/home/user0/.conda/envs/rafi/bin/python}"
-ACCEL="${ACCEL:-/home/user0/.conda/envs/rafi/bin/accelerate}"
+PYTHON="${PYTHON:-$(command -v python || true)}"
+ACCEL="${ACCEL:-$(dirname "$PYTHON")/accelerate}"
+GPU="${CUDA_VISIBLE_DEVICES:-0}"
 FRESH_DATE="${FRESH_DATE:-$(date +%Y%m%d)}"
 FRESH_ROOT="${FRESH_ROOT:-$FROST_ROOT/output/fresh_${FRESH_DATE}}"
 
@@ -16,9 +19,17 @@ FRESH_ROOT="${FRESH_ROOT:-$FROST_ROOT/output/fresh_${FRESH_DATE}}"
 export TMUX_TMPDIR="${TMUX_TMPDIR:-$FROST_ROOT/.tmux}"
 mkdir -p "$TMUX_TMPDIR"
 
-if [[ ! -x "$PYTHON" ]]; then
-  echo "ERROR: expected conda rafi python at $PYTHON" >&2
+if [[ -z "$PYTHON" || ! -x "$PYTHON" ]]; then
+  echo "ERROR: python not found ('$PYTHON'). Activate your env or set PYTHON=/path/to/python." >&2
   exit 1
+fi
+if [[ ! -x "$ACCEL" ]]; then
+  echo "ERROR: accelerate not found at $ACCEL. Install it in the same env or set ACCEL=/path/to/accelerate." >&2
+  exit 1
+fi
+HF_EXPORT=""
+if [[ -n "${HF_ENDPOINT:-}" ]]; then
+  HF_EXPORT="export HF_ENDPOINT='$HF_ENDPOINT'"
 fi
 
 eval "$("$PYTHON" - <<PY
@@ -163,12 +174,11 @@ fi
 
 tmux new-session -d -s "$SESSION" -c "$FROST_ROOT" bash -lc "
 set -euo pipefail
-source /opt/conda/etc/profile.d/conda.sh
-conda activate rafi
-export CUDA_VISIBLE_DEVICES=1
+export PATH='$(dirname "$PYTHON")':\$PATH
+export CUDA_VISIBLE_DEVICES='$GPU'
 export NCCL_P2P_DISABLE=1
 export WANDB_MODE=offline
-export HF_ENDPOINT=\${HF_ENDPOINT:-https://hf-mirror.com}
+$HF_EXPORT
 export PYTHONUNBUFFERED=1
 export PYTHONPATH='$FROST_SRC:$VENDOR_SRC'\${PYTHONPATH:+:\$PYTHONPATH}
 which python | tee -a '$OUT_DIR/train.log'
@@ -185,3 +195,4 @@ echo "Started tmux session: $SESSION"
 echo "Output: $OUT_DIR"
 echo "Log: $OUT_DIR/train.log"
 echo "Attach: tmux attach -t $SESSION"
+echo "CUDA_VISIBLE_DEVICES=$GPU"

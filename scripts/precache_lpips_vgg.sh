@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
-# Precache torchvision VGG16 for lpips.LPIPS(net='vgg'). Uses conda rafi only.
+# Precache torchvision VGG16 for lpips.LPIPS(net='vgg'). Uses the active python (or $PYTHON).
 set -euo pipefail
 
-PYTHON="${PYTHON:-/home/user0/.conda/envs/rafi/bin/python}"
-if [[ ! -x "$PYTHON" ]]; then
-  echo "ERROR: expected rafi python at $PYTHON" >&2
+PYTHON="${PYTHON:-$(command -v python || true)}"
+if [[ -z "$PYTHON" || ! -x "$PYTHON" ]]; then
+  echo "ERROR: python not found ('$PYTHON'). Activate your env or set PYTHON=/path/to/python." >&2
   exit 1
 fi
-case "$PYTHON" in
-  */envs/rafi/bin/python) ;;
-  *)
-    echo "ERROR: refuse non-rafi python: $PYTHON" >&2
-    exit 1
-    ;;
-esac
 
 "$PYTHON" - <<'PY'
 import os

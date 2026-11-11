@@ -157,7 +157,21 @@ def render(root: Path, selection: dict, out_dir: Path) -> list[Path]:
             plt.close(fig)
             written.append(outp)
             print(f"wrote {outp} ({outp.stat().st_size/1024**2:.2f} MiB, panel {w}x{h})")
+            write_preview(outp, out_dir / "previews")
     return written
+
+
+def write_preview(png: Path, preview_dir: Path, width: int = 1600) -> Path:
+    """Compressed JPG copy of a grid for the README; the PNG stays the reference figure."""
+    from PIL import Image
+
+    preview_dir.mkdir(parents=True, exist_ok=True)
+    im = Image.open(png).convert("RGB")
+    im = im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)
+    outp = preview_dir / f"{png.stem}.jpg"
+    im.save(outp, quality=85, optimize=True, progressive=True)
+    print(f"wrote {outp} ({outp.stat().st_size/1024:.0f} KiB)")
+    return outp
 
 
 def main() -> int:
@@ -167,7 +181,14 @@ def main() -> int:
     ap.add_argument("--stage-links", action="store_true")
     ap.add_argument("--render", action="store_true")
     ap.add_argument("--selection", type=Path, default=None)
+    ap.add_argument("--horse-runs", default=DATASETS["horse2zebra"]["run_root"],
+                    help="Horse2Zebra run folder relative to --root (holds <method>/eval_final/)")
+    ap.add_argument("--bdd-runs", default=DATASETS["bdd100k_day_night"]["run_root"],
+                    help="BDD100K run folder relative to --root (holds <method>/eval_final/)")
     args = ap.parse_args()
+
+    DATASETS["horse2zebra"]["run_root"] = args.horse_runs
+    DATASETS["bdd100k_day_night"]["run_root"] = args.bdd_runs
 
     root = args.root.resolve()
     sel_path = args.selection or root / "report" / "tables" / "qualitative_selection.json"

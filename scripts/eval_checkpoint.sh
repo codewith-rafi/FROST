@@ -1,18 +1,30 @@
 #!/usr/bin/env bash
 # Offline FID + DINO eval. Default checkpoint: model_2000.pkl under output_dir.
-# Usage: bash scripts/eval_checkpoint.sh <config.yaml> [checkpoint.pkl]
+# Usage: bash scripts/eval_checkpoint.sh <run_dir>/config.yaml [checkpoint.pkl]
+# Pass the run's own config.yaml (written by launch_train.sh), not configs/course/*.yaml:
+# output_dir is read from it, and the course configs only hold a placeholder.
+# Env overrides: PYTHON, CUDA_VISIBLE_DEVICES (default 0), HF_ENDPOINT.
 set -euo pipefail
 
 FROST_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CFG="${1:?usage: eval_checkpoint.sh <config.yaml> [checkpoint.pkl]}"
+CFG="${1:?usage: eval_checkpoint.sh <run_dir>/config.yaml [checkpoint.pkl]}"
 CFG="$(cd "$(dirname "$CFG")" && pwd)/$(basename "$CFG")"
-PYTHON="${PYTHON:-/home/user0/.conda/envs/rafi/bin/python}"
+PYTHON="${PYTHON:-$(command -v python || true)}"
 VENDOR="$FROST_ROOT/vendor/img2img-turbo"
 
-# Pin tmux under workspace; allow CUDA_VISIBLE_DEVICES override (default GPU1).
+if [[ -z "$PYTHON" || ! -x "$PYTHON" ]]; then
+  echo "ERROR: python not found ('$PYTHON'). Activate your env or set PYTHON=/path/to/python." >&2
+  exit 1
+fi
+HF_EXPORT=""
+if [[ -n "${HF_ENDPOINT:-}" ]]; then
+  HF_EXPORT="export HF_ENDPOINT='$HF_ENDPOINT'"
+fi
+
+# Pin tmux under workspace; allow CUDA_VISIBLE_DEVICES override (default GPU 0).
 export TMUX_TMPDIR="${TMUX_TMPDIR:-$FROST_ROOT/.tmux}"
 mkdir -p "$TMUX_TMPDIR"
-export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-1}"
+export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
 # cleanfid expects /tmp/inception-2015-12-05.pt and skips download if any file exists
 # (including incomplete). Prefer durable frost cache copy when size matches.
@@ -47,6 +59,11 @@ print(c["output_dir"], c.get("dataset_folder", "data/horse2zebra"),
 PY
 )
 
+if [[ "$OUT_DIR" == *"OUTPUT_DIR_PLACEHOLDER"* ]]; then
+  echo "ERROR: $CFG has no resolved output_dir. Pass output/fresh_YYYYMMDD/<dataset>/<method>/config.yaml." >&2
+  exit 1
+fi
+
 CKPT="${2:-$OUT_DIR/checkpoints/model_2000.pkl}"
 CKPT="$(cd "$(dirname "$CKPT")" && pwd)/$(basename "$CKPT")"
 if [[ ! -f "$CKPT" ]]; then
@@ -65,11 +82,10 @@ fi
 
 tmux new-session -d -s "$SESSION" -c "$FROST_ROOT" bash -lc "
 set -euo pipefail
-source /opt/conda/etc/profile.d/conda.sh
-conda activate rafi
+export PATH='$(dirname "$PYTHON")':\$PATH
 export CUDA_VISIBLE_DEVICES='$CUDA_VISIBLE_DEVICES'
 export TMUX_TMPDIR='$TMUX_TMPDIR'
-export HF_ENDPOINT=\${HF_ENDPOINT:-https://hf-mirror.com}
+$HF_EXPORT
 export PYTHONUNBUFFERED=1
 export PYTHONPATH='$FROST_ROOT/src:$VENDOR/src'\${PYTHONPATH:+:\$PYTHONPATH}
 echo \"EVAL_START \$(date -Iseconds) ckpt=$CKPT cuda=\$CUDA_VISIBLE_DEVICES\" | tee -a '$LOG'

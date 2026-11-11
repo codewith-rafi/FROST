@@ -16,7 +16,7 @@ All runs were executed on a shared lab host. The following settings were held fi
 | Experiment tracking | Weights & Biases in offline mode (`WANDB_MODE=offline`) |
 | Model downloads | `HF_ENDPOINT=https://hf-mirror.com` (overridable) |
 
-The launchers in `scripts/` encode these settings. To reproduce on different hardware, change the conda activation line and `CUDA_VISIBLE_DEVICES` in the launchers, or run the Python modules (`frost.train_cyclegan_turbo`, `frost.evaluate_unpaired`) directly with the arguments the launchers pass.
+The reported runs were launched with `PYTHON` pointing at the `rafi` env, `CUDA_VISIBLE_DEVICES=1` for training, `CUDA_VISIBLE_DEVICES=0` for evaluation and `HF_ENDPOINT=https://hf-mirror.com`. The launchers in `scripts/` now read these from environment variables and default to the active Python, GPU 0 and the official Hugging Face Hub (see "Running on your own machine" in the [README](README.md#running-on-your-own-machine)). Alternatively, run the Python modules (`frost.train_cyclegan_turbo`, `frost.evaluate_unpaired`) directly with the arguments the launchers pass.
 
 **Single-GPU training.** Each run trains on exactly one GPU and no two runs ever share a GPU. All eight training runs used the same GPU. Evaluation on a second, identical GPU does not affect the comparison between methods.
 
@@ -24,7 +24,7 @@ The launchers in `scripts/` encode these settings. To reproduce on different har
 
 | Item | Value |
 |---|---|
-| Optimizer steps | **2,000** per run (brief: 1,500) |
+| Training iterations | **2,000** per run (brief: 1,500); each iteration makes 3 generator and 2 discriminator optimizer updates |
 | Checkpoints | every **500** steps; only **`model_2000.pkl`** is evaluated |
 | In-loop validation | disabled (`validation_steps=2000`, `validation_num_images=0`); final evaluation runs offline on **all** held-out images |
 | Visualisation | disabled (`viz_freq=0`) |
@@ -37,7 +37,7 @@ The launchers in `scripts/` encode these settings. To reproduce on different har
 | `lambda_granular` | baseline **0**; binary, fuzzy and fuzzy-rough **0.10** |
 | Output root | `output/fresh_YYYYMMDD/<dataset>/<method>/`; existing non-empty checkpoint directories are never reused |
 
-Measured throughput was about 20–22 s per step, or roughly 11–12.5 h per 2,000-step run. See [`report/tables/runtime_protocol.md`](report/tables/runtime_protocol.md).
+Measured throughput was about 20–22 s per iteration, or roughly 11–12.5 h per 2,000-iteration run; the exception is BDD binary at 6.87 s per iteration (cause not instrumented). See [`report/tables/runtime_protocol.md`](report/tables/runtime_protocol.md).
 
 **Why FP32.** The trainer hard-codes `weight_dtype = torch.float32` and does not cast the models. Passing `accelerate launch --mixed_precision bf16` would therefore not produce a genuine bf16 run, so the flag is not used.
 
@@ -50,12 +50,7 @@ Measured throughput was about 20–22 s per step, or roughly 11–12.5 h per 2,0
 | Horse ↔ Zebra | 1,067 / 1,334 | 120 / 140 | full standard split, frozen |
 | BDD100K Day ↔ Night | **1,067 / 1,334** | **120 / 140** | counts matched to Horse ↔ Zebra; subset seed **37** (brief: 1,500/1,500/500/500, seed 42) |
 
-To rebuild the BDD subset:
-
-```bash
-python scripts/build_bdd_day_night_subset.py \
-  --train-day 1067 --train-night 1334 --val-day 120 --val-night 140 --seed 37
-```
+To rebuild the BDD subset, follow [`data/readme.md`](data/readme.md#rebuilding-bdd100k_day_night). It gives the full command (image, label, output and manifest paths plus `--seed 37 --train-day 1067 --train-night 1334 --val-day 120 --val-night 140`) and shows how to check the result against the frozen manifests without overwriting them.
 
 **Dataset location.** Datasets live in `<project root>/data/<dataset>/`. Configs pass `--dataset_folder data/<dataset>` relative to the project root, and every launcher uses the project root as its working directory. On the training host, the `train_*` / `test_*` entries are absolute symlinks into the raw trees (`100k/` and `horse2zebra/`). The `data/` folder can therefore be moved, but the raw trees cannot. The full layout is described in [`data/readme.md`](data/readme.md).
 
@@ -93,7 +88,9 @@ The launcher copies the config into the run directory and writes the exact comma
 ## 7. Final evaluation
 
 ```bash
-bash scripts/eval_checkpoint.sh <course_yaml> <run>/checkpoints/model_2000.pkl
+bash scripts/eval_checkpoint.sh <run>/config.yaml <run>/checkpoints/model_2000.pkl
 ```
+
+`<run>` is the run directory, e.g. `output/fresh_20261024/horse2zebra/fuzzy`. Its `config.yaml` is the copy written by the training launcher, which holds the resolved `output_dir`; the files in `configs/course/` only contain a placeholder.
 
 This computes Clean-FID and DINO-Struct (mean, standard deviation and per-image values) in both directions on all held-out images, and writes `metrics.json` into the run directory. `scripts/run_course_eval.sh` evaluates all eight runs in sequence and skips any run that already has a valid `metrics.json`.

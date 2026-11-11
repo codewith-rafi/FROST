@@ -189,7 +189,15 @@ def main() -> int:
     ap.add_argument("--out-dir", type=Path, default=None)
     ap.add_argument("--resamples", type=int, default=10000)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--horse-runs", default=DATASETS["horse2zebra"][0],
+                    help="Horse2Zebra run folder relative to --root (holds <method>/metrics.json)")
+    ap.add_argument("--bdd-runs", default=DATASETS["bdd100k_day_night"][0],
+                    help="BDD100K run folder relative to --root (holds <method>/metrics.json)")
     args = ap.parse_args()
+
+    archived = (args.horse_runs, args.bdd_runs) == (DATASETS["horse2zebra"][0], DATASETS["bdd100k_day_night"][0])
+    DATASETS["horse2zebra"] = (args.horse_runs, *DATASETS["horse2zebra"][1:])
+    DATASETS["bdd100k_day_night"] = (args.bdd_runs, *DATASETS["bdd100k_day_night"][1:])
 
     root = args.root.resolve()
     out_dir = (args.out_dir or root / "report" / "tables").resolve()
@@ -204,6 +212,10 @@ def main() -> int:
 
     bt = bootstrap(root, out_dir, args.resamples, args.seed)
     print(f"[bootstrap] {len(bt)} CIs, {args.resamples} resamples")
+
+    if not archived:
+        print("custom run folders: skipping self-check against the archived values")
+        return 0
 
     # self-check against known values
     checks = [
